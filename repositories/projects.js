@@ -3,7 +3,47 @@ const db = require('../models');
 const getAll = async (limit, offset) => {
   const response = await db.Project.findAll({
     limit: limit,
-    offset: offset
+    offset: offset,
+    attributes: {
+      exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
+    },
+    include: [
+      {
+        model: db.User,
+        as: 'projectManager',
+        attributes: {
+          exclude: [
+            'createdAt',
+            'updatedAt',
+            'deletedAt',
+            'password',
+            'email',
+            'userRoleId'
+          ]
+        }
+      },
+      {
+        model: db.User,
+        as: 'assignees',
+        attributes: {
+          exclude: [
+            'createdAt',
+            'updatedAt',
+            'deletedAt',
+            'password',
+            'email',
+            'userRoleId'
+          ]
+        }
+      },
+      {
+        model: db.ProjectStatus,
+        as: 'projectStatus',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      }
+    ]
   });
   return response;
 };
@@ -14,7 +54,7 @@ const getById = async (id) => {
       id: id
     },
     attributes: {
-      exclude: ['projectManagerId', 'projectStatusId']
+      exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
     },
     include: [
       {
@@ -28,7 +68,7 @@ const getById = async (id) => {
         model: db.User,
         as: 'assignees',
         attributes: {
-          exclude: ['createdAt', 'updatedAt']
+          exclude: ['createdAt', 'updatedAt', 'deletedAt']
         }
       },
       {
