@@ -8,7 +8,7 @@ const getById = async (id) => {
 const getByProjectId = async (projectId) => {
   const response = await db.ProjectAssignees.findAll({
     where: {
-      userId: projectId
+      projectId: projectId
     }
   });
   return response;

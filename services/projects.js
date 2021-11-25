@@ -122,7 +122,7 @@ const create = async (projectData) => {
   }
 
   // verificar que existan ids de assignees en users
-  verifyAsignees(assignees);
+  await verifyAsignees(assignees);
 
   // crear nuevo project
   const project = await projectsRepository.create(projectData);
@@ -166,7 +166,7 @@ const update = async (id, projectData) => {
   const { name, description, projectManagerId, assignees, projectStatusId } =
     projectData;
 
-  // verificar que exita el proyecto
+  // verificar que exista el proyecto
   const project = await projectsRepository.getById(id);
   if (!project) {
     const error = new Error('Project not found');
@@ -174,16 +174,40 @@ const update = async (id, projectData) => {
     throw error;
   }
 
-  //traer projectAssigneesNew a partir de array assignees
+  //verificar que no exista el mismo nombre
+  const projectExist = await projectsRepository.getByName(name);
+  if (projectExist && projectExist.id != id) {
+    const error = new Error('Project name already exists');
+    error.status = 400;
+    throw error;
+  }
 
+  // verificar ids de assignees
+  await verifyAsignees(assignees);
+
+  // update
   await projectsRepository.update(id, {
     name,
     description,
     projectManagerId,
-    assignees,
     projectStatusId
   });
-  return await projectsRepository.getById(id);
+
+  // projectAssignees de ESTE proyecto existentes en bd
+  const projectAssigneesOld = await projectAssigneesRepository.getByProjectId(
+    id
+  );
+  // console.log(projectAssigneesOld);
+
+  // agregar assignees nuevos
+
+  // eliminar assignees que ya no pertenecen al proyecto
+
+  const updatedProject = await projectsRepository.getById(id);
+
+  const updatedProjectMapped = mapProjectResponse(updatedProject);
+
+  return updatedProjectMapped;
 };
 
 const remove = async (id) => {
