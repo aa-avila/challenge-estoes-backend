@@ -1,10 +1,5 @@
 const db = require('../models');
 
-const getAll = async () => {
-  const response = await db.ProjectAssignees.findAll();
-  return response;
-};
-
 const getById = async (id) => {
   const response = await db.ProjectAssignees.findByPk(id);
   return response;
@@ -43,7 +38,6 @@ const remove = async (id) => {
 };
 
 module.exports = {
-  getAll,
   getById,
   getByProjectId,
   getByUserId,
