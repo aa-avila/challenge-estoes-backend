@@ -26,13 +26,11 @@ const getAll = async (req) => {
 
   const page = paginationData.page;
 
-  // respuestas pagina 1
   if (page == 1) {
     response.previousPage = null;
   }
 
   if (page == paginationData.lastPage) {
-    //devuelve solo data
     response.nextPage = null;
   }
 
