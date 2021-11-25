@@ -28,6 +28,10 @@ module.exports = {
       userRoleId: {
         type: Sequelize.INTEGER
       },
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

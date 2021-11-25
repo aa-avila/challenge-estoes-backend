@@ -1,12 +1,120 @@
 const db = require('../models');
 
-const getAll = async () => {
-  const response = await db.Project.findAll();
+const getAll = async (limit, offset) => {
+  const response = await db.Project.findAll({
+    limit: limit,
+    offset: offset,
+    attributes: {
+      exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
+    },
+    include: [
+      {
+        model: db.User,
+        as: 'projectManager',
+        attributes: {
+          exclude: [
+            'createdAt',
+            'updatedAt',
+            'deletedAt',
+            'password',
+            'email',
+            'userRoleId'
+          ]
+        }
+      },
+      {
+        model: db.User,
+        as: 'assignees',
+        attributes: {
+          exclude: [
+            'createdAt',
+            'updatedAt',
+            'deletedAt',
+            'password',
+            'email',
+            'userRoleId'
+          ]
+        }
+      },
+      {
+        model: db.ProjectStatus,
+        as: 'projectStatus',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      }
+    ]
+  });
   return response;
 };
 
 const getById = async (id) => {
-  const response = await db.Project.findByPk(id);
+  const response = await db.Project.findOne({
+    where: {
+      id: id
+    },
+    attributes: {
+      exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
+    },
+    include: [
+      {
+        model: db.User,
+        as: 'projectManager',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt', 'password']
+        }
+      },
+      {
+        model: db.User,
+        as: 'assignees',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+        }
+      },
+      {
+        model: db.ProjectStatus,
+        as: 'projectStatus',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      }
+    ]
+  });
+  return response;
+};
+
+const getByName = async (name) => {
+  const response = await db.Project.findOne({
+    where: {
+      name: name
+    },
+    attributes: {
+      exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
+    },
+    include: [
+      {
+        model: db.User,
+        as: 'projectManager',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt', 'password']
+        }
+      },
+      {
+        model: db.User,
+        as: 'assignees',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+        }
+      },
+      {
+        model: db.ProjectStatus,
+        as: 'projectStatus',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      }
+    ]
+  });
   return response;
 };
 
@@ -41,6 +149,7 @@ const remove = async (id) => {
 module.exports = {
   getAll,
   getById,
+  getByName,
   getCount,
   create,
   update,
