@@ -1,5 +1,7 @@
 const projectsRepository = require('../repositories/projects');
 const usersRepository = require('../repositories/users');
+const projectAssigneesRepository = require('../repositories/projectAssignees');
+
 const paginateRequest = require('../services/paginateRequest');
 
 const getAll = async (req) => {
@@ -16,13 +18,41 @@ const getAll = async (req) => {
     paginationData.offset
   );
 
+  let projectsResponse = [];
+
+  projects.forEach((proj) => {
+    const assignees = proj.assignees;
+
+    const assigneesMap = assignees.map((item) => {
+      const newItem = {
+        userId: item.id,
+        firstName: item.firstName,
+        lastName: item.lastName
+      };
+      return newItem;
+    });
+
+    //
+    const project = {
+      id: proj.id,
+      name: proj.name,
+      projectStatus: proj.projectStatus,
+      projectManager: proj.projectManager,
+      assignees: assigneesMap,
+      createdAt: proj.createdAt,
+      updatedAt: proj.updatedAt
+    };
+
+    projectsResponse.push(project);
+  });
+
   // respuesta por defecto (pagina intermedia)
   let response = {
-    count: projects.length,
+    count: projectsResponse.length,
     maxCount: paginationData.maxCount,
     previousPage: paginationData.previousPageUrl,
     nextPage: paginationData.nextPageUrl,
-    data: projects
+    data: projectsResponse
   };
 
   const page = paginationData.page;
@@ -89,6 +119,32 @@ const create = async (projectData) => {
   const project = await projectsRepository.create(projectData);
 
   // agregar assignees en projectAssignees mediante ids assignees y project.id
+  const addAssignees = new Promise((resolve, reject) => {
+    assignees.forEach(async (value, index, array) => {
+      const data = {
+        projectId: project.id,
+        userId: value
+      };
+      const assignCreated = await projectAssigneesRepository.create(data);
+      if (!assignCreated) {
+        reject({
+          message: `There was an error adding the user: ${value} to projectAssignees.`
+        });
+      }
+      if (index === array.length - 1) resolve();
+    });
+  });
+
+  try {
+    await addAssignees.then(() => {
+      console.log('ok!');
+    });
+  } catch (e) {
+    console.log(e);
+    const error = new Error(e.message);
+    error.status = 400;
+    throw error;
+  }
 
   const newProject = await projectsRepository.getById(project.id);
   return newProject;
