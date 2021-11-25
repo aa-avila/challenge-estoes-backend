@@ -9,7 +9,37 @@ const getAll = async (limit, offset) => {
 };
 
 const getById = async (id) => {
-  const response = await db.Project.findByPk(id);
+  const response = await db.Project.findOne({
+    where: {
+      id: id
+    },
+    attributes: {
+      exclude: ['projectManagerId', 'projectStatusId']
+    },
+    include: [
+      {
+        model: db.User,
+        as: 'projectManager',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt', 'password']
+        }
+      },
+      {
+        model: db.User,
+        as: 'assignees',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      },
+      {
+        model: db.ProjectStatus,
+        as: 'projectStatus',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      }
+    ]
+  });
   return response;
 };
 
