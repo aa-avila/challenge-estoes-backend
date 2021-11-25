@@ -75,7 +75,30 @@ const getById = async (id) => {
     error.status = 404;
     throw error;
   }
-  return project;
+
+  const assignees = project.assignees;
+
+  const assigneesMap = assignees.map((item) => {
+    const newItem = {
+      userId: item.id,
+      firstName: item.firstName,
+      lastName: item.lastName
+    };
+    return newItem;
+  });
+
+  //
+  const projectResponse = {
+    id: project.id,
+    name: project.name,
+    projectStatus: project.projectStatus,
+    projectManager: project.projectManager,
+    assignees: assigneesMap,
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt
+  };
+
+  return projectResponse;
 };
 
 const create = async (projectData) => {
