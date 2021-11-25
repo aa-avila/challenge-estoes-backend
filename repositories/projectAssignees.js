@@ -28,11 +28,9 @@ const create = async (data) => {
   return user;
 };
 
-const remove = async (id) => {
+const remove = async (data) => {
   const respose = await db.ProjectAssignees.destroy({
-    where: {
-      id
-    }
+    where: data
   });
   return respose;
 };

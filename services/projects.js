@@ -53,6 +53,63 @@ const mapProjectResponse = (project) => {
   return projectResponse;
 };
 
+const assigneeMultipleInsert = async (assignees, projectId) => {
+  if (assignees.length > 0) {
+    const addEntries = new Promise((resolve, reject) => {
+      assignees.forEach(async (value, index, array) => {
+        const data = {
+          userId: value,
+          projectId: projectId
+        };
+        const assignCreated = await projectAssigneesRepository.create(data);
+        if (!assignCreated) {
+          reject({
+            message: `There was an error adding the user: ${value} to projectAssignees.`
+          });
+        }
+        if (index === array.length - 1) resolve();
+      });
+    });
+    try {
+      await addEntries.then(() => {
+        console.log('ok!');
+      });
+    } catch (e) {
+      console.log(e);
+      const error = new Error(e.message);
+      error.status = 400;
+      throw error;
+    }
+  }
+};
+
+const assigneeMultipleDelete = async (assignees, projectId) => {
+  if (assignees.length > 0) {
+    const deleteEntries = new Promise((resolve, reject) => {
+      assignees.forEach(async (value, index, array) => {
+        const data = {
+          userId: value,
+          projectId: projectId
+        };
+        const assignRemoved = await projectAssigneesRepository.remove(data);
+        if (index === array.length - 1) resolve();
+      });
+    });
+    try {
+      await deleteEntries.then(() => {
+        console.log('ok!');
+      });
+    } catch (e) {
+      console.log(e);
+      const error = new Error(e.message);
+      error.status = 400;
+      throw error;
+    }
+  }
+};
+
+/****************************************************** */
+
 const getAll = async (req) => {
   const limit = Number(req.query.limit);
   const maxCount = await projectsRepository.getCount();
@@ -128,32 +185,7 @@ const create = async (projectData) => {
   const project = await projectsRepository.create(projectData);
 
   // agregar assignees en projectAssignees mediante ids assignees y project.id
-  const addAssignees = new Promise((resolve, reject) => {
-    assignees.forEach(async (value, index, array) => {
-      const data = {
-        projectId: project.id,
-        userId: value
-      };
-      const assignCreated = await projectAssigneesRepository.create(data);
-      if (!assignCreated) {
-        reject({
-          message: `There was an error adding the user: ${value} to projectAssignees.`
-        });
-      }
-      if (index === array.length - 1) resolve();
-    });
-  });
-
-  try {
-    await addAssignees.then(() => {
-      console.log('ok!');
-    });
-  } catch (e) {
-    console.log(e);
-    const error = new Error(e.message);
-    error.status = 400;
-    throw error;
-  }
+  await assigneeMultipleInsert(assignees, project.id);
 
   const newProject = await projectsRepository.getById(project.id);
 
@@ -185,7 +217,7 @@ const update = async (id, projectData) => {
   // verificar ids de assignees
   await verifyAsignees(assignees);
 
-  // update
+  // update project basic data
   await projectsRepository.update(id, {
     name,
     description,
@@ -197,12 +229,25 @@ const update = async (id, projectData) => {
   const projectAssigneesOld = await projectAssigneesRepository.getByProjectId(
     id
   );
-  // console.log(projectAssigneesOld);
 
-  // agregar assignees nuevos
+  //array de assigneesOld
+  const assigneesOld = projectAssigneesOld.map((item) => {
+    return item.dataValues.userId;
+  });
 
-  // eliminar assignees que ya no pertenecen al proyecto
+  // array de nuevos assignees a agregar
+  let assigneesToAdd = assignees.filter((x) => !assigneesOld.includes(x));
 
+  // array de nuevos assignees a eliminar
+  let assigneesToRemove = assigneesOld.filter((x) => !assignees.includes(x));
+
+  // Agregar nuevos assignees a BD
+  await assigneeMultipleInsert(assigneesToAdd, id);
+
+  // Eliminar los que ya no pertenecen al proyecto
+  await assigneeMultipleDelete(assigneesToRemove, id);
+
+  // Devolver actualizado
   const updatedProject = await projectsRepository.getById(id);
 
   const updatedProjectMapped = mapProjectResponse(updatedProject);
