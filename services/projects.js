@@ -2,7 +2,7 @@ const projectsRepository = require('../repositories/projects');
 const paginateRequest = require('../services/paginateRequest');
 
 const getAll = async (req) => {
-  const limit = req.query.limit;
+  const limit = Number(req.query.limit);
   const maxCount = await projectsRepository.getCount();
   const paginationData = paginateRequest.pagination(
     limit,
@@ -17,11 +17,14 @@ const getAll = async (req) => {
 
   // respuesta por defecto (pagina intermedia)
   let response = {
+    count: projects.length,
     maxCount: paginationData.maxCount,
     previousPage: paginationData.previousPageUrl,
     nextPage: paginationData.nextPageUrl,
     data: projects
   };
+
+  const page = paginationData.page;
 
   // respuestas pagina 1
   if (page == 1) {

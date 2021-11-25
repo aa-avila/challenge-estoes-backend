@@ -1,7 +1,10 @@
 const db = require('../models');
 
-const getAll = async () => {
-  const response = await db.Project.findAll();
+const getAll = async (limit, offset) => {
+  const response = await db.Project.findAll({
+    limit: limit,
+    offset: offset
+  });
   return response;
 };
 
