@@ -83,6 +83,41 @@ const getById = async (id) => {
   return response;
 };
 
+const getByName = async (name) => {
+  const response = await db.Project.findOne({
+    where: {
+      name: name
+    },
+    attributes: {
+      exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
+    },
+    include: [
+      {
+        model: db.User,
+        as: 'projectManager',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt', 'password']
+        }
+      },
+      {
+        model: db.User,
+        as: 'assignees',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'deletedAt']
+        }
+      },
+      {
+        model: db.ProjectStatus,
+        as: 'projectStatus',
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      }
+    ]
+  });
+  return response;
+};
+
 const getCount = async () => {
   const response = await db.Project.count();
   return response;
@@ -114,6 +149,7 @@ const remove = async (id) => {
 module.exports = {
   getAll,
   getById,
+  getByName,
   getCount,
   create,
   update,
