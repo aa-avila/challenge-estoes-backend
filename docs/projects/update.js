@@ -3,7 +3,11 @@ module.exports = {
     tags: ['PROJECTS'],
     summary: 'Actualizar un proyecto',
     operationId: 'projectUpdate',
-    parameters: [],
+    parameters: [
+      {
+        $ref: '#/components/schemas/parameters/idParam'
+      }
+    ],
     requestBody: {
       content: {
         'application/json': {
