@@ -35,7 +35,7 @@ const create = async (req, res, next) => {
     const project = await projectsService.create(req.body);
     res.status(200).json({
       success: true,
-      msg: `The project:${project.id}  has been created`,
+      msg: `The project: ${project.id} has been created successfully!`,
       data: project
     });
   } catch (error) {
