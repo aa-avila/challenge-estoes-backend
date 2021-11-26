@@ -4,4 +4,5 @@ SECRET_TOKEN=jwtSecret
 DB_NAME=theDbName
 DB_USER=root
 DB_PASSWORD=pass
+DB_HOST=localhost
 DB_PORT=3306
