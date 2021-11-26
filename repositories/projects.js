@@ -1,9 +1,19 @@
 const db = require('../models');
+const { Op } = require('sequelize');
 
-const getAll = async (limit, offset) => {
+const getAll = async (limit, offset, filter) => {
+  let query = {};
+  if (filter) {
+    query = {
+      name: {
+        [Op.substring]: filter // permite que el name no este completo, es decir que sea una subcadena
+      }
+    };
+  }
   const response = await db.Project.findAll({
     limit: limit,
     offset: offset,
+    where: query,
     attributes: {
       exclude: ['deletedAt', 'projectManagerId', 'projectStatusId']
     },
