@@ -1,4 +1,5 @@
 CUSTOM_PORT=1234
+SECRET_TOKEN=jwtSecret
 
 DB_NAME=theDbName
 DB_USER=root
