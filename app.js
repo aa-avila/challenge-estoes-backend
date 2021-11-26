@@ -5,9 +5,8 @@ const path = require('path');
 require('dotenv').config();
 const swaggerDoc = require('./docs');
 
-const authRouter = require('./routes/auth');
+const authRouter = require('./routes/auths');
 const projectsRouter = require('./routes/projects');
-const usersRouter = require('./routes/users');
 
 const app = express();
 const customPort = process.env.CUSTOM_PORT;
@@ -26,7 +25,6 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/projects', projectsRouter);
-app.use('/users', usersRouter);
 
 // Swagger api-docs
 swaggerDoc(app);

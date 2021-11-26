@@ -119,9 +119,13 @@ const getAll = async (req) => {
     req,
     'projects'
   );
+
+  const filter = req.query.name;
+
   const projects = await projectsRepository.getAll(
     limit,
-    paginationData.offset
+    paginationData.offset,
+    filter
   );
 
   let projectsResponse = [];

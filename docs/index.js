@@ -9,11 +9,11 @@ const components = require('./components');
 const swaggerDefinition = {
   ...basicInfo,
   ...components,
-  // security: [
-  //     {
-  //         bearerAuth: [],
-  //     },
-  // ],
+  security: [
+    {
+      ApiKeyAuth: []
+    }
+  ],
   ...tags,
   ...paths
 };

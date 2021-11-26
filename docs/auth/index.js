@@ -1,7 +1,7 @@
 const login = require('./login');
 
 module.exports = {
-  '/auth': {
+  '/auth/login': {
     ...login
   }
 };
