@@ -1,3 +1,3 @@
 module.exports = {
-  tags: [{ name: 'PROJECTS' }]
+  tags: [{ name: 'AUTH' }, { name: 'PROJECTS' }]
 };

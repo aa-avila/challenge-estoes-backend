@@ -1,28 +1,28 @@
 module.exports = {
   components: {
-    // securitySchemes: {
-    //     bearerAuth: {
-    //         "type": "http",
-    //         "scheme": "bearer",
-    //         "bearerFormat": "JWT",
-    //     },
-    // },
+    securitySchemes: {
+      ApiKeyAuth: {
+        type: 'apiKey',
+        name: 'authorization',
+        in: 'header'
+      }
+    },
     schemas: {
-      // user: {
-      //     type: 'object',
-      //     properties: {
-      //         email: {
-      //             type: 'string',
-      //             description: "Email de usuario",
-      //             example: "user@server.com"
-      //         },
-      //         password: {
-      //             type: 'string',
-      //             description: "Clave de usuario",
-      //             example: "hDoej34Use"
-      //         }
-      //     }
-      // },
+      user: {
+        type: 'object',
+        properties: {
+          email: {
+            type: 'string',
+            description: 'Email de usuario',
+            example: 'test@admin.com'
+          },
+          password: {
+            type: 'string',
+            description: 'Clave de usuario',
+            example: '12345678'
+          }
+        }
+      },
       project: {
         type: 'object',
         properties: {
@@ -35,6 +35,24 @@ module.exports = {
             type: 'string',
             description: 'Descripción del proyecto.',
             example: 'Elaboración de landing page.'
+          },
+          projectStatusId: {
+            type: 'integer',
+            description: 'ID de status del proyecto.',
+            example: 2
+          },
+          projectManagerId: {
+            type: 'integer',
+            description: 'ID de usuario manager del proyecto.',
+            example: 1
+          },
+          assignees: {
+            type: 'array',
+            items: {
+              type: 'integer'
+            },
+            description: 'IDs de usuarios asignados al proyecto.',
+            example: [2, 3, 4]
           }
         }
       },
